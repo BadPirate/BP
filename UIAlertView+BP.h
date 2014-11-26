@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface UIAlertView (BP)
-+ (id)alertWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSArray *)otherButtonTitles completionHandler:(void(^)(UIAlertView *alertView, NSUInteger buttonClicked))completionHandler;
++ (id)alertWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSArray *)otherButtonTitles completionHandler:(void(^)(UIAlertView *alertView, NSInteger buttonClicked))completionHandler;
 @end

@@ -9,11 +9,11 @@
 #import "UIAlertView+BP.h"
 
 @interface UIAlertView_block : UIAlertView <UIAlertViewDelegate>
-@property (nonatomic, copy) void(^completionHandler)(UIAlertView *alertView, NSUInteger buttonClicked);
+@property (nonatomic, copy) void(^completionHandler)(UIAlertView *alertView, NSInteger buttonClicked);
 @end
 
 @implementation UIAlertView (BP)
-+ (id)alertWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSArray *)otherButtonTitles completionHandler:(void(^)(UIAlertView *alertView, NSUInteger buttonClicked))completionHandler
++ (id)alertWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSArray *)otherButtonTitles completionHandler:(void(^)(UIAlertView *alertView, NSInteger buttonClicked))completionHandler
 {
     if(![NSThread isMainThread]) // addButtonWithTitle is not threadsafe, threadsafe this method too.
     {
