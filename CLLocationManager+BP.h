@@ -18,5 +18,5 @@ typedef void(^BPLocationHandler)(CLLocation *location, NSError *error);
  *  @param requestReason String to use with alert prior to requesting permission for users location, if not already provided.
  *  @param completionHandler method will always be called upon success or failure
  */
- + (void)getCurrentLocationReason:(NSString *)requestReason completion:(BPLocationHandler)completionHandler;
++ (void)getCurrentLocationAlways:(BOOL)always completion:(BPLocationHandler)completionHandler;
 @end

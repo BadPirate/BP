@@ -27,6 +27,7 @@ static BPLocationDelegate *sLocationDelegate;
 {
     self = [super init];
     self.completionHandlers = @[completionHandler];
+    self.manager = [[CLLocationManager alloc] init];
     return self;
 }
 
@@ -54,8 +55,6 @@ static BPLocationDelegate *sLocationDelegate;
 
 - (void)start
 {
-    if(self.manager) return;
-    self.manager = [[CLLocationManager alloc] init];
     self.manager.delegate = self;
     [self.manager startUpdatingLocation];
 }
@@ -64,7 +63,7 @@ static BPLocationDelegate *sLocationDelegate;
 
 @implementation CLLocationManager (BP)
 
- + (void)getCurrentLocationReason:(NSString *)requestReason completion:(BPLocationHandler)completionHandler
+ + (void)getCurrentLocationAlways:(BOOL)always completion:(BPLocationHandler)completionHandler
 {
     if(sLocationDelegate)
     {
@@ -88,23 +87,14 @@ static BPLocationDelegate *sLocationDelegate;
     if(![CLLocationManager locationServicesEnabled] || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined)
     {
         // Location services not enabled, get permission.
-        [[UIAlertView alertWithTitle:nil
-                            message:requestReason
-                  cancelButtonTitle:@"Cancel"
-                  otherButtonTitles:@[@"Okay"]
-                  completionHandler:^(UIAlertView *alertView, NSUInteger buttonClicked) {
-                      
-                      if(buttonClicked == alertView.cancelButtonIndex)
-                      {
-                          NSError *error = [NSError errorWithDomain:kCLErrorDomain
-                                                               code:kCLErrorDenied
-                                                           userInfo:nil];
-                          [sLocationDelegate completeWithLocation:nil error:error];
-                          return;
-                      }
-                      [sLocationDelegate start];
-                  }] show];
-        return;
+        if(always)
+        {
+            [sLocationDelegate.manager requestAlwaysAuthorization];
+        }
+        else
+        {
+            [sLocationDelegate.manager requestWhenInUseAuthorization];
+        }
     }
     
     // We have permissions, proceed as usual.    
