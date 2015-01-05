@@ -19,4 +19,5 @@ typedef void(^BPLocationHandler)(CLLocation *location, NSError *error);
  *  @param completionHandler method will always be called upon success or failure
  */
 + (void)getCurrentLocationAlways:(BOOL)always completion:(BPLocationHandler)completionHandler;
++ (CLLocation *)lastLocation;
 @end

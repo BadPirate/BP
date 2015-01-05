@@ -10,8 +10,16 @@ import Foundation
 
 extension NSURLSession {
     func getForServer(server: String, scheme: String, path: String, cachePolicy: NSURLRequestCachePolicy, timeout: NSTimeInterval, parameters: Dictionary<String,String>?, completionHandler: ((data: NSData?, response : NSURLResponse?, error : NSError?, result: AnyObject?) -> Void)) {
+        self.dataForServer(false, server: server, scheme: scheme, path: path, cachePolicy: cachePolicy, timeout: timeout, parameters: parameters, completionHandler: completionHandler)
+    }
+    func postForServer(server: String, scheme: String, path: String, cachePolicy: NSURLRequestCachePolicy, timeout: NSTimeInterval, parameters: Dictionary<String,String>?, completionHandler: ((data: NSData?, response : NSURLResponse?, error : NSError?, result: AnyObject?) -> Void))
+    {
+        self.dataForServer(true, server: server, scheme: scheme, path: path, cachePolicy: cachePolicy, timeout: timeout, parameters: parameters, completionHandler: completionHandler)
+    }
+    func dataForServer(isPost: Bool, server: String, scheme: String, path: String, cachePolicy: NSURLRequestCachePolicy, timeout: NSTimeInterval, parameters: Dictionary<String,String>?, completionHandler: ((data: NSData?, response : NSURLResponse?, error : NSError?, result: AnyObject?) -> Void))
+    {
         var mutablePath = path
-        if (parameters != nil)
+        if (!isPost && parameters != nil)
         {
             if let parameterString : String = String.queryStringFromParameters(parameters!) {
                 mutablePath += parameterString
@@ -19,7 +27,12 @@ extension NSURLSession {
         }
         let URL = NSURL(scheme: scheme, host: server, path: mutablePath)
         let request = NSMutableURLRequest(URL: URL!, cachePolicy: cachePolicy, timeoutInterval: timeout)
-        request.HTTPMethod = "GET"
+        request.HTTPMethod = isPost ? "POST" : "GET"
+        if(isPost && parameters != nil)
+        {
+            request.HTTPBody = NSJSONSerialization.dataWithJSONObject(parameters!, options: NSJSONWritingOptions.allZeros, error: nil)
+            request.addValue("application/json", forHTTPHeaderField: "Content-type")
+        }
         self.dataTaskWithRequest(request, completionHandler: { (data, response, error) -> Void in
             var result : AnyObject? = nil
             if let mime = response?.MIMEType
@@ -29,6 +42,7 @@ extension NSURLSession {
                 case "application/json":
                     result = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.allZeros, error: nil)
                 case "text/html":
+                    NSLog("HTML Response: %@",NSString(data: data, encoding: NSUTF8StringEncoding)!)
                     let controller = SVModalWebViewController(URL: response!.URL)
                     controller.modalDelegate = self
                     UIApplication.sharedApplication().keyWindow!.rootViewController!.presentViewController(controller, animated: true, completion: nil)

@@ -27,40 +27,37 @@ class BPNetImage : UIImageView {
                 return
             }
             self.image = nil
-            let request = NSURLRequest(URL: URL!, cachePolicy: NSURLRequestCachePolicy.ReturnCacheDataElseLoad, timeoutInterval: 60)
-            _task = _imageSession.dataTaskWithRequest(request, completionHandler: { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+            _task = BPNetImage.imageForURL(URL!, completionHandler: { (image) -> Void in
                 if (self._task == nil) {
                     return // Cancelled
                 }
                 self._task = nil
                 
-                if let e = error
-                {
-                    if (e.code == -999)
-                    {
-                        return // Cancelled
-                    }
-                    NSLog("Error Loading Image: %@",e.localizedDescription)
-                    return
-                }
-                if let d = data
-                {
-                    if let dataImage : UIImage = UIImage(data: d)
-                    {
-                        self.image = dataImage
-                    }
-                    else
-                    {
-                        NSLog("Could not generate image from data - %@", d)
-                    }
-                }
-                else
-                {
-                    NSLog("No data - %@", response!)
-                }
-
+                self.image = image
             })
-            _task!.resume()
         }
+    }
+    class func imageForURL(URL : NSURL, completionHandler: ((image : UIImage?) -> Void)) -> NSURLSessionDataTask {
+        let request = NSURLRequest(URL: URL, cachePolicy: NSURLRequestCachePolicy.ReturnCacheDataElseLoad, timeoutInterval: 60)
+        let task = _imageSession.dataTaskWithRequest(request, completionHandler: { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+            if let e = error
+            {
+                if (e.code == -999)
+                {
+                    completionHandler(image: nil)
+                }
+                NSLog("Error Loading Image: %@",e.localizedDescription)
+                completionHandler(image: nil)
+            }
+            if let d = data
+            {
+                completionHandler(image: UIImage(data: d))
+            }
+            else {
+                completionHandler(image: nil)
+            }
+        })
+        task.resume()
+        return task
     }
 }

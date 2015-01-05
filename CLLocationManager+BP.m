@@ -12,6 +12,7 @@
 @class BPLocationDelegate;
 
 static BPLocationDelegate *sLocationDelegate;
+static CLLocation *sLastLocation = nil;
 
 @interface BPLocationDelegate : NSObject <CLLocationManagerDelegate>
 @property (nonatomic, strong) CLLocationManager *manager;
@@ -43,6 +44,7 @@ static BPLocationDelegate *sLocationDelegate;
 
 - (void)completeWithLocation:(CLLocation *)location error:(NSError *)error
 {
+    sLastLocation = location;
     self.manager.delegate = nil;
     [self.manager stopUpdatingLocation];
     
@@ -62,6 +64,10 @@ static BPLocationDelegate *sLocationDelegate;
 
 
 @implementation CLLocationManager (BP)
++ (CLLocation *)lastLocation
+{
+    return sLastLocation;
+}
 
  + (void)getCurrentLocationAlways:(BOOL)always completion:(BPLocationHandler)completionHandler
 {
