@@ -37,4 +37,11 @@ extension String {
         }
         return queryString
     }
+    
+    var doubleValue: Double {
+        if let number = NSNumberFormatter().numberFromString(self) {
+            return number.doubleValue
+        }
+        return 0
+    }
 }
