@@ -42,7 +42,6 @@ extension NSURLSession {
                 case "application/json":
                     result = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.allZeros, error: nil)
                 case "text/html":
-                    NSLog("HTML Response: %@",NSString(data: data, encoding: NSUTF8StringEncoding)!)
                     let controller = SVModalWebViewController(URL: response!.URL)
                     controller.modalDelegate = self
                     UIApplication.sharedApplication().keyWindow!.rootViewController!.presentViewController(controller, animated: true, completion: nil)
