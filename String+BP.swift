@@ -10,8 +10,8 @@ import Foundation
 
 extension String {
     func URLEncodedString() -> String? {
-        var customAllowedSet =  NSCharacterSet.URLQueryAllowedCharacterSet()
-        var escapedString = self.stringByAddingPercentEncodingWithAllowedCharacters(customAllowedSet)
+        let customAllowedSet =  NSCharacterSet.URLQueryAllowedCharacterSet()
+        let escapedString = self.stringByAddingPercentEncodingWithAllowedCharacters(customAllowedSet)
         return escapedString
     }
     static func queryStringFromParameters(parameters: Dictionary<String,String>) -> String? {
