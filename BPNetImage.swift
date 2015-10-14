@@ -26,17 +26,23 @@ class BPNetImage : UIImageView {
             if (URL == nil) {
                 return
             }
-            self.image = nil
+            weak var weakSelf = self
             _task = BPNetImage.imageForURL(URL!, completionHandler: { (image) -> Void in
                 if (self._task == nil) {
                     return // Cancelled
                 }
                 self._task = nil
-                
-                self.image = image
+                if let i = image
+                {
+                    self.image = i
+                }
+                else if let backupImage = weakSelf?.backupImage {
+                    self.image = backupImage
+                }
             })
         }
     }
+    var backupImage : UIImage?
     class func imageForURL(URL : NSURL, completionHandler: ((image : UIImage?) -> Void)) -> NSURLSessionDataTask {
         let request = NSURLRequest(URL: URL, cachePolicy: NSURLRequestCachePolicy.ReturnCacheDataElseLoad, timeoutInterval: 60)
         let task = _imageSession.dataTaskWithRequest(request, completionHandler: { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
