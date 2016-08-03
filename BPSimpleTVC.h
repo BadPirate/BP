@@ -21,6 +21,11 @@
 - (NSComparisonResult)compare:(BPSimpleRow *)row;
 @end
 
+@interface BPToggleRow : BPSimpleRow
+@property (nonatomic, strong) void(^toggleHandler)(BOOL toggled);
++ (BPToggleRow *)rowWithReuseIdentifier:(NSString *)reuseIdentifier originalState:(BOOL)state toggleHandler:(void(^)(BOOL toggled))toggleHandler;
+@end
+
 @interface BPSimpleSection : NSObject
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSArray *rows;

@@ -23,7 +23,48 @@
     row.reuseIdentifier = reuseIdentifier;
     return row;
 }
+@end
 
+@interface BPToggleRow ()
+@property (nonatomic, strong) UISwitch *toggle;
+@property (nonatomic, assign) BOOL initialState;
+@end
+
+@implementation BPToggleRow
++(BPToggleRow *)rowWithReuseIdentifier:(NSString *)reuseIdentifier originalState:(BOOL)state toggleHandler:(void (^)(BOOL))toggleHandler {
+    BPToggleRow *row = [[BPToggleRow alloc] init];
+    row.reuseIdentifier = reuseIdentifier;
+    row.initialState = state;
+    row.toggleHandler = toggleHandler;
+    return row;
+}
+
+-(void (^)(NSIndexPath *, UITableViewCell *))didLoadHandler {
+    return ^(NSIndexPath *path, UITableViewCell *cell) {
+        self.toggle = [[UISwitch alloc] init];
+        self.toggle.on = self.initialState;
+        [self.toggle addTarget:self action:@selector(toggled:) forControlEvents:UIControlEventValueChanged];
+        cell.accessoryView = self.toggle;
+        if(super.didLoadHandler) {
+            super.didLoadHandler(path,cell);
+        }
+    };
+}
+
+-(void (^)(NSIndexPath *))didSelectHandler {
+    return ^(NSIndexPath *indexPath) {
+        self.toggle.on = !self.toggle.on;
+        if (super.didSelectHandler) {
+            super.didSelectHandler(indexPath);
+        }
+    };
+}
+
+- (void)toggled:(UISwitch *)toggled {
+    if (self.toggleHandler) {
+        self.toggleHandler(toggled.on);
+    }
+}
 @end
 
 @implementation BPSimpleSection
